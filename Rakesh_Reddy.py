@@ -511,7 +511,7 @@ def _parse_cli(argv):
             i += 1
             time_limit = max(0.1, float(argv[i]))
         elif arg in ("-h", "--help"):
-            print("Usage: python chess_bot.py [--time SECONDS] [--debug] '<FEN>'")
+            print("Usage: python Rakesh_Reddy.py [--time SECONDS] [--debug] '<FEN>'")
             print("If no FEN argument is supplied, the bot reads one FEN line from stdin.")
             sys.exit(0)
         else:

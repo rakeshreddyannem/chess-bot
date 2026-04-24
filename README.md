@@ -1,35 +1,54 @@
 # Chess Bot Arena - Custom Chess Engine
 
-This repository contains a purely Python-based, algorithmic Chess Bot designed for the **Chess Bot Arena** competition. The bot operates entirely independently without relying on any pre-built engines (like Stockfish) or external APIs, ensuring full compliance with competition rules.
+Pure Python chess bot for a competition runner that sends one FEN string and expects one legal UCI move.
 
-## Core Features 🧠
+## Competition Contract
 
-* **Algorithm**: The core decision-making is powered by the **Minimax algorithm** enhanced with **Alpha-Beta Pruning** to efficiently evaluate deep variations without exhausting computational resources.
-* **Evaluation**: The bot relies on a comprehensive Evaluation Function that calculates:
-  * **Material Advantage** (Standard piece values: P=100, N=320, B=330, R=500, Q=900, K=20000).
-  * **Positional Understanding** through highly tuned **Piece-Square Tables (PST)** which guide pieces to mathematically optimal active squares early in the game.
-* **Move Ordering**: To maximize Alpha-Beta cutoffs, the engine evaluates captures before quiet moves, drastically boosting search speed.
-* **Time Management**: The bot uses **Iterative Deepening**, which means it searches depth 1, then depth 2, then depth 3, continuously updating its \"best move\" guess. Since the competition has a strict `4.0 second` time limit per move, Iterative Deepening guarantees the bot will immediately return the best move found once 80% of its time limit has elapsed. 
-* **Zero Dependencies**: Pure Python logic—no external dependencies, networking, or installations required.
+- Input: one standard FEN position.
+- Output: exactly one UCI move on stdout, for example `e2e4`, `g1f3`, or `e7e8q`.
+- Time limit: default search budget is `3.5` seconds, leaving margin under the 4 second rule.
+- Dependencies: none. No Stockfish, external engines, APIs, or network calls.
+- Failure mode: invalid or no-move positions return `0000` instead of crashing.
 
-## Specifications ⚙️
+## Files
 
-As per the competition rules, this engine is entirely headless (no UI/GUI). It acts as a standard input/output backend interface:
-* **Input**: Accepts board states exclusively in standard **FEN (Forsyth-Edwards Notation)** format.
-* **Output**: Strictly responds with universally parsable **UCI (Universal Chess Interface)** strings (e.g., `e2e4`, `g1f3`, `e1g1` for kingside castling).
-* **Legality**: Fully handles advanced chess implementations like **En Passant**, **Castling rights**, and blocks all pseudo-legal moves that would inherently leave the king in check.
+- `Rakesh_Reddy.py` - upload this one file to the Google Form. It supports `import Rakesh_Reddy`, `next_move(fen)`, and direct CLI execution.
+- `chess_bot.py` - development copy of the same engine.
+- `A.V. Rakesh Reddy.py` - older named copy kept for reference.
+- `test_chess_bot.py` - local legality, timing, and CLI-output checks.
 
-## Testing & Usage 🧪
+## Run
 
-A test suite is included to verify the logic and validity of the bot under competition time constraints.
+Command-line FEN:
 
-To run the automated tests against predefined critical positions (e.g. Scholar's mate, Back-rank mate):
+```bash
+python Rakesh_Reddy.py "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+```
+
+Pipe FEN through stdin:
+
+```bash
+echo "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1" | python Rakesh_Reddy.py
+```
+
+The default output is submission-safe: only the move is printed. For local diagnostics, use stderr-only timing:
+
+```bash
+python Rakesh_Reddy.py --debug "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+```
+
+## Test
+
 ```bash
 python test_chess_bot.py
 ```
 
-The tester will process predefined Checkmates and Captures, validating move legality and execution speed. It also features a real-time prompt to submit a custom FEN.
+For manual FEN experiments after the automated checks:
 
----
+```bash
+python test_chess_bot.py --interactive
+```
 
-*Good luck at the Chess Bot Arena!* ♟️
+## Engine Summary
+
+The bot uses legal move generation, minimax with alpha-beta pruning, iterative deepening, material scoring, piece-square tables, and capture-first move ordering. It handles castling, promotion, en passant, check filtering, checkmate, and stalemate without using a pre-built chess engine.
